@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using fadb_api.Models;
+using Swashbuckle.Swagger.Model;
 
 namespace fadb_api
 {
@@ -29,6 +31,20 @@ namespace fadb_api
         {
             // Add framework services.
             services.AddMvc();
+            services.AddSingleton<IFirearmRepository, InMemoryFirearmRepository>();
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(options =>
+            {
+                options.SingleApiVersion(new Info
+                {
+                    Version = "v1",
+                    Title = "fadb API",
+                    Description = "REST API for the firearms db",
+                    TermsOfService = "None",
+                    Contact = new Contact { Name = "Bryan Weaver", Email = "bryanweaver@outlook.com" },
+                    License = new License { Name = "MIT", Url = "https://opensource.org/licenses/MIT" }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +54,9 @@ namespace fadb_api
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            app.UseSwagger();
+            app.UseSwaggerUi();
         }
     }
 }
