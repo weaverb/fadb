@@ -3,7 +3,9 @@ using fadb_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
+using System;
 using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace FirearmsApi.Tests
@@ -14,6 +16,7 @@ namespace FirearmsApi.Tests
         private Mock<IFirearmRepository> _mockRepo;
         private List<Firearm> _firearmCollection;
         private Firearm _singleFirearm;
+        private FirearmController _controller;
 
         public Firearm_API_Should()
         {
@@ -32,30 +35,33 @@ namespace FirearmsApi.Tests
             _singleFirearm = new Firearm { Key = "1", Name = "Test Firearm", SerialNumber = "001", IsNfaRegistered = false };
         }
 
+        private void SetupRepository<T>(Expression<Func<IFirearmRepository, T>> method, T returnObj)
+        {
+            _mockRepo.Setup(method).Returns(returnObj);
+            _controller = new FirearmController(_repo);
+        }
+
         [Fact]
         public void ReturnDefaultFirearmWhenGetAllIsCalled()
         {
-            _mockRepo.Setup(x => x.GetAll()).Returns(_firearmCollection);
-            var controller = new FirearmController(_repo);
-            var result = controller.GetAll();
+            SetupRepository(x => x.GetAll(), _firearmCollection);
+            var result = _controller.GetAll();
             Assert.Equal("1", result.First().Key);
         }
 
         [Fact]
         public void ReturnDefaultFirearmWhenIdIsPassedToGetById()
         {
-            _mockRepo.Setup(x => x.Find(It.IsAny<string>())).Returns(_singleFirearm);
-            var controller = new FirearmController(_repo);
-            var result = controller.GetById("1") as ObjectResult;
+            SetupRepository(x => x.Find(It.IsAny<string>()), _singleFirearm);
+            var result = _controller.GetById("1") as ObjectResult;
             Assert.Equal("1", ((Firearm)result.Value).Key);
         }
 
         [Fact]
         public void ReturnNotFoundWhenInvalidKeyPassedToGetById()
         {
-            _mockRepo.Setup(x => x.Find(It.IsAny<string>()));
-            var controller = new FirearmController(_repo);
-            var result = controller.GetById("-1");
+            SetupRepository(x => x.Find(It.IsAny<string>()), null);
+            var result = _controller.GetById("-1");
             Assert.IsType<NotFoundResult>(result);
         }
 
