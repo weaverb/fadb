@@ -6,8 +6,8 @@ namespace fadb_api.Models
     {
         void Add(Firearm firearm);
         IEnumerable<Firearm> GetAll();
-        Firearm Find(string key);
-        Firearm Remove(string key);
+        Firearm Find(int id);
+        Firearm Remove(int id);
         void Update(Firearm firearm);
     }
 }

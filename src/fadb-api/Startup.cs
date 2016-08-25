@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using fadb_api.Models;
 using Swashbuckle.Swagger.Model;
+using fadb_api.ef;
+using Microsoft.EntityFrameworkCore;
 
 namespace fadb_api
 {
@@ -31,7 +33,7 @@ namespace fadb_api
         {
             // Add framework services.
             services.AddMvc();
-            services.AddSingleton<IFirearmRepository, InMemoryFirearmRepository>();
+            services.AddSingleton<IFirearmRepository, EfFirearmRepository>();
             services.AddSwaggerGen();
             services.ConfigureSwaggerGen(options =>
             {
@@ -45,6 +47,8 @@ namespace fadb_api
                     License = new License { Name = "MIT", Url = "https://opensource.org/licenses/MIT" }
                 });
             });
+
+            services.AddDbContext<FirearmDbContext>(o => o.UseInMemoryDatabase());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

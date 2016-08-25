@@ -24,7 +24,7 @@ namespace fadb_api.Controllers
         }
 
         [HttpGet("{id}", Name ="GetFirearm")]
-        public IActionResult GetById(string id)
+        public IActionResult GetById(int id)
         {
             var firearm = Firearms.Find(id);
             if(firearm == null)
@@ -44,13 +44,13 @@ namespace fadb_api.Controllers
             }
 
             Firearms.Add(firearm);
-            return CreatedAtRoute("GetFirearm", new { id = firearm.Key }, firearm);
+            return CreatedAtRoute("GetFirearm", new { id = firearm.Id }, firearm);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(string id, [FromBody] Firearm firearm)
+        public IActionResult Update(int id, [FromBody] Firearm firearm)
         {
-            if(firearm == null || firearm.Key != id)
+            if(firearm == null || firearm.Id != id)
             {
                 return BadRequest();
             }
@@ -66,7 +66,7 @@ namespace fadb_api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public IActionResult Delete(int id)
         {
             var firearm = Firearms.Find(id);
             if(firearm == null)
